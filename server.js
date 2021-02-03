@@ -15,21 +15,8 @@ app.use(express.static("public"));
 app.listen(PORT,()=>{
     console.log(`Server listening on http://localhost:${PORT}`)
 })
-//Storing read/write Note into variables
-const readNotes = () => {
-    fs.readFile(__dirname + "/db/db.json", (err, response) => {
-        if (err) throw err;
-        notes = JSON.parse(response); 
-    });
-};
-const writeNotes= ()=>{
-    fs.readFile(__dirname + "/db/db.json", (err, response)=>{
-        if(err) throw err;
-        notes= JSON.parse(reponse);
 
-    })
-}
-// HTML ROUTER
+// HTML Routes
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/index.html"));
 });
@@ -37,7 +24,34 @@ app.get("/", (req, res) => {
 app.get("/notes", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/notes.html"));
 });
-// API ROUTE
-// ADD NOTE
+
+app.get("/api/notes", (req, res) => {
+    return res.sendFile(path.join(__dirname, "db/db.json"));
+});
+
 // Setup the /api/notes POST route
+app.post("/api/notes", function(request, response){
+    fs.readFile("./db/db.json", "utf-8", function(err, notedata){
+
+        let savedNotes= JSON.parse(notedata);
+        console.log(savedNotes)
+        let newNote= request.body;
+        newNote.id= savedNotes.length +1;
+        savedNotes.push(newNote)
+
+        fs.writeFile("./db/db.json", JSON.stringify(savedNotes), "utf-8", function(err){
+            if(err) throw err;
+            console.log('Saved!')
+        })
+    })
+    response.send("Done")
+})
 // DELETE NOTE
+// app.delete('/api/notes/:id', (req, res) => {
+    // Read json data in db.json
+    // Target objects (notes) in the db.json array
+    // Parse json data and assign the notes a unique ID
+    // For loop over them
+    // stringify json data
+    // res.json()
+// })
