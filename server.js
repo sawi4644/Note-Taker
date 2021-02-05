@@ -52,8 +52,8 @@ app.delete("/api/notes/:id", function (req, res) {
     fs.readFile("./db/db.json", "utf-8", function (error, data) {
         if (error) throw error;
 
-        var savedNote = JSON.parse(data)
-        var deleteNote = savedNote.findIndex((x) => x.id == id)
+        let savedNote = JSON.parse(data)
+        let deleteNote = savedNote.findIndex((x) => x.id == id)
         savedNote.splice(deleteNote, 1)
 
         fs.writeFile("./db/db.json", JSON.stringify(savedNote), "utf-8", function (error) {
