@@ -30,12 +30,12 @@ app.get("/api/notes", (req, res) => {
 });
 
 // Setup the /api/notes POST route
-app.post("/api/notes", function(request, response){
+app.post("/api/notes", function(req, res){
     fs.readFile("./db/db.json", "utf-8", function(err, notedata){
 
         let savedNotes= JSON.parse(notedata);
         console.log(savedNotes)
-        let newNote= request.body;
+        let newNote= req.body;
         newNote.id= savedNotes.length +1;
         savedNotes.push(newNote)
 
@@ -44,14 +44,22 @@ app.post("/api/notes", function(request, response){
             console.log('Saved!')
         })
     })
-    response.send("Done")
+    res.send("Done")
 })
 // DELETE NOTE
-// app.delete('/api/notes/:id', (req, res) => {
-    // Read json data in db.json
-    // Target objects (notes) in the db.json array
-    // Parse json data and assign the notes a unique ID
-    // For loop over them
-    // stringify json data
-    // res.json()
-// })
+app.delete("/api/notes/:id", function(req, res){
+    var id = req.params.id
+    fs.readFile("./db/db.json", "utf-8", function(error, data){
+        if (error)throw error;
+
+        var savedNote = JSON.parse(data)
+        var deleteNote = savedNote.findIndex((x) => x.id == id)
+        savedNote.splice(deleteNote, 1)
+
+        fs.writeFile("./db/db.json", JSON.stringify(savedNote), "utf-8", function(error){
+            if (error) throw error;
+            console.log("Deleted!")
+        })
+    })
+    res.send("Done!")
+})
